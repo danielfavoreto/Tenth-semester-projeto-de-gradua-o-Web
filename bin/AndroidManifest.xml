@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.ufes.alertaufes"
+    android:versionCode="3"
+    android:versionName="1.2" >
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
+    <uses-sdk
+        android:minSdkVersion="15"
+        android:targetSdkVersion="23" />
+    
+	<supports-screens android:smallScreens="true" 
+          android:normalScreens="true" 
+          android:largeScreens="true"
+          android:xlargeScreens="true"
+          android:anyDensity="true" />
+	
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/alerta_ufes_logo"
+        android:label="AlertaUfes"
+        android:theme="@style/default_activity_theme" >
+        <activity
+            android:name="view.MainActivity"
+            android:label="AlertaUfes" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:label="AlertaUfes" >
+        </activity>
+        <service android:name=".MyService" android:process=":my_service" />
+        
+        
+    </application>
+
+</manifest>

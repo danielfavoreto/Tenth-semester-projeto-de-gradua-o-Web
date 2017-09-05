@@ -1,0 +1,97 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/Blue"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context="view.LoginActivity" >
+    
+    <ImageView
+        android:id="@+id/imageViewCabecalhoAlerta"
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+		android:layout_weight="0.20"
+        android:background="#E4E9ED"
+        android:src="@drawable/cabecalho" />
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_weight="0.90"
+        android:orientation="vertical" >
+        
+    <EditText
+        android:id="@+id/inputUsuario"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:textColorHint="@color/White"
+        android:textSize="40sp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="120dp"
+        android:ems="10"
+        android:hint="Usuário" />
+
+    <EditText
+        android:id="@+id/inputSenha"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/inputUsuario"
+        android:layout_below="@+id/inputUsuario"
+        android:layout_marginTop="30dp"
+        android:textColorHint="@color/White"
+        android:textSize="40sp"
+        android:ems="10"
+        android:hint="Senha"
+        android:inputType="textPassword" />
+    
+	<EditText
+        android:id="@+id/inputCelular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/inputSenha"
+        android:layout_below="@+id/inputSenha"
+        android:layout_marginTop="30dp"
+        android:textColorHint="@color/White"
+        android:digits="0123456789"
+        android:hint="Celular"
+        android:ems="10"
+        android:textSize="40sp"
+        android:inputType="phone" />
+
+    <Button
+        android:id="@+id/buttonAutenticar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/inputCelular"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="55dp"
+        android:textSize="40sp"
+        android:text="Autenticar" />
+
+    <TextView
+        android:id="@+id/textViewCentralMonitoramento"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/textViewTelefoneCentral"
+        android:textColor="@color/White"
+        android:layout_marginBottom="5dp"
+        android:layout_centerHorizontal="true"
+        android:text="Central de Monitoramento:"
+        android:textSize="40sp" />
+
+    <TextView
+        android:id="@+id/textViewTelefoneCentral"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="70dp"
+        android:text="27 4009 - 2727"
+        android:textColor="@color/White"
+        android:textSize="40sp" />
+    
+    </RelativeLayout>
+    
+</LinearLayout>
