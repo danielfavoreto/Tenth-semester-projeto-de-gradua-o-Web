@@ -31,6 +31,8 @@ public class GPSTracker extends Service implements LocationListener {
     
     private String nomePessoa;
     
+    private String telefone;
+    
     private ProgressDialog progressSearchLocation;
     
     private ImageButton buttonAlertar;
@@ -65,13 +67,14 @@ public class GPSTracker extends Service implements LocationListener {
     // guardar o json da resposta do alerta
     public JSONObject jsonResposta;
     
-    public GPSTracker(Context context, String usuario, String senha, String nomePessoa, ImageButton buttonAlertar) throws Exception {
+    public GPSTracker(Context context, String usuario, String senha, String nomePessoa, String telefone, ImageButton buttonAlertar) throws Exception {
     	
         this.mContext = context;
         this.usuario = usuario;
         this.senha = senha;
         this.nomePessoa = nomePessoa;
         this.buttonAlertar = buttonAlertar;
+        this.telefone = telefone;
         getLocation();
 
     }
@@ -273,8 +276,8 @@ public class GPSTracker extends Service implements LocationListener {
 								
 				try {
 					
-					String resposta = new ConexaoServidor(mContext).execute("https://alerta.ufes.br/web/index.php?r=alerta/alertar&", "lat=" + String.valueOf(location.getLatitude()) + "&" + "lng=" + 
-						String.valueOf(location.getLongitude()) + "&" + "usr=" + usuario + "&" + "psw=" + senha ,"enviarRequisicao").get();
+					String resposta = new ConexaoServidor(mContext).execute("http://192.168.0.108/alertaUfes/get_alert.php?", "lat=" + String.valueOf(location.getLatitude()) + "&" + "lng=" + 
+						String.valueOf(location.getLongitude()) + "&" + "usr=" + usuario + "&" + "psw=" + senha + "&" + "name=" + nomePessoa + "&" + "tel=" + telefone,"enviarRequisicao").get();
 				
 				if (resposta.equals("false")){
 					
@@ -346,8 +349,8 @@ public class GPSTracker extends Service implements LocationListener {
 				
 				try {
 					
-					String resposta = new ConexaoServidor(mContext).execute("https://alerta.ufes.br/web/index.php?r=alerta/alertar&", "lat=" + String.valueOf(location.getLatitude()) + "&" + "lng=" + 
-							String.valueOf(location.getLongitude()) + "&" + "usr=" + usuario + "&" + "psw=" + senha ,"enviarRequisicao").get();
+					String resposta = new ConexaoServidor(mContext).execute("http://192.168.0.108/alertaUfes/get_alert.php?", "lat=" + String.valueOf(location.getLatitude()) + "&" + "lng=" + 
+							String.valueOf(location.getLongitude()) + "&" + "usr=" + usuario + "&" + "psw=" + senha + "&" + "name=" + nomePessoa + "&" + "tel=" + telefone,"enviarRequisicao").get();
 				
 				if (resposta.equals("false")){
 					
@@ -415,8 +418,9 @@ public class GPSTracker extends Service implements LocationListener {
 			
 			try {
 				
-				String resposta = new ConexaoServidor(mContext).execute("https://alerta.ufes.br/web/index.php?r=alerta/update-precisao&" , "lat=" + String.valueOf(location.getLatitude()) + 
-						"&" + "lng=" + String.valueOf(location.getLongitude()) + "&" + "usr=" + usuario + "&" + "psw=" + senha + "&" + "id=" + id ,"enviarRequisicao").get();
+				/*String resposta = new ConexaoServidor(mContext).execute("http://192.168.0.108/update-precisao&" , "lat=" + String.valueOf(location.getLatitude()) + 
+						"&" + "lng=" + String.valueOf(location.getLongitude()) + "&" + "usr=" + usuario + "&" + "psw=" + senha + "&" + "id=" + id ,"enviarRequisicao").get();*/
+				String resposta = "true";
 			
 			if (resposta.equals("false")){
 				

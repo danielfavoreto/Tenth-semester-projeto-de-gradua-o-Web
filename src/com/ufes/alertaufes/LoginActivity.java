@@ -26,6 +26,7 @@ public class LoginActivity extends Activity {
 	private String user = "usuario";
 	private String password = "senha";
 	private String name = "nome";
+	private String telephone = "telefone";
 	private Boolean exit = false;
 	private ProgressDialog progressDialogAutentication;
 	
@@ -134,7 +135,7 @@ public class LoginActivity extends Activity {
 					
 		        	progressDialogAutentication = ProgressDialog.show(LoginActivity.this, "Autenticando", " Aguarde",true);
 		        	
-					String resposta = new ConexaoServidor(LoginActivity.this).execute("https://alerta.ufes.br/web/index.php?r=usuario/autenticar&"
+					String resposta = new ConexaoServidor(LoginActivity.this).execute("http://192.168.0.108/alertaUfes/mobileAuth.php?"
 							,"usr=" + usuario + "&" + "psw=" + senha + "&" + "cel=" + phone, "enviarAutenticacao").get();
 					
 					if (resposta.equals("false")){
@@ -174,6 +175,7 @@ public class LoginActivity extends Activity {
 						returnBundle.putString(password, senha);
 						returnBundle.putString(user, usuario);
 						returnBundle.putString(name, resposta);
+						returnBundle.putString(telephone, phone);
 						
 						returnIntent.putExtras(returnBundle);
 						

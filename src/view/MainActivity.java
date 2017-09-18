@@ -44,6 +44,7 @@ public class MainActivity extends Activity{
 	private String senha = "senha";
 	private String nome = "nome";
 	private String hora = "hora";
+	private String telefone = "telefone";
 	protected LocationManager locationManager = null;
 	private boolean exit = false;
 	private GPSTracker gpsTracker = null;
@@ -300,7 +301,7 @@ public class MainActivity extends Activity{
 				sharedPreferences = getSharedPreferences(userLoginAndPasswordPreferences,Context.MODE_PRIVATE);
 				
 				gpsTracker = new GPSTracker(MainActivity.this,sharedPreferences.getString("usuario", "admin"),sharedPreferences.getString("senha", "admin"),
-							sharedPreferences.getString("nome", "Usuário"),buttonAlertar);
+							sharedPreferences.getString("nome", "Usuário"), sharedPreferences.getString("telefone", "00000000000"),buttonAlertar);
 				
 				sharedPreferences = getSharedPreferences(lastRequestPreferences,Context.MODE_PRIVATE);
 				
@@ -489,6 +490,7 @@ public class MainActivity extends Activity{
 				editor.putString(usuario, bundle.getString(usuario));
 				editor.putString(senha, bundle.getString(senha));
 				editor.putString(nome, bundle.getString(nome));
+				editor.putString(telefone, bundle.getString(telefone));
 				editor.commit();
 
 			}
@@ -502,8 +504,7 @@ public class MainActivity extends Activity{
 	        
 	}
 	
-	@Override
-	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+	/*public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
 	    switch(requestCode) {
 	      case INITIAL_REQUEST:
@@ -514,5 +515,5 @@ public class MainActivity extends Activity{
 	        }
 
 	    }
-	  }
+	  }*/
 }
