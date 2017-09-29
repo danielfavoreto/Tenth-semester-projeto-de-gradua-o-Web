@@ -1,5 +1,6 @@
 package view;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -13,19 +14,23 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
+import android.media.MediaRecorder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.support.v4.app.ActivityCompat;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -45,21 +50,26 @@ public class MainActivity extends Activity{
 	private String nome = "nome";
 	private String hora = "hora";
 	private String telefone = "telefone";
+	private String mFileName;
 	protected LocationManager locationManager = null;
+	private MediaRecorder mRecorder = null;
 	private boolean exit = false;
+	private boolean mStartRecording = false;
 	private GPSTracker gpsTracker = null;
 	private Timer timerSearchForGpsLocation;
 	private int limitCounterSecondsForGpsLocation = 0;  
 	private static final String[] INITIAL_PERMS = {
 			    Manifest.permission.ACCESS_FINE_LOCATION,
-			    Manifest.permission.ACCESS_COARSE_LOCATION
+			    Manifest.permission.ACCESS_COARSE_LOCATION,
+			    Manifest.permission.RECORD_AUDIO,
+			    Manifest.permission.WRITE_EXTERNAL_STORAGE
 			  };
 	private static final String permissionFineLocation = Manifest.permission.ACCESS_FINE_LOCATION;
 	private static final String permissionCoarseLocation = Manifest.permission.ACCESS_COARSE_LOCATION;
 	private ImageButton buttonAlertar;
 	private Button buttonSair;
 	private static final int INITIAL_REQUEST=1337;
-	private final static long tempoToleranciaNovaRequisicao = 300000; // 5 minutos = 300 milisegundos 
+	private final static long tempoToleranciaNovaRequisicao = 30000; // 0.5 minuto(s) = 30 segundos 
 	private final static int tempoToleranciaProcuraGps = 120; // 2 minutos
 	
 	@Override
@@ -77,7 +87,7 @@ public class MainActivity extends Activity{
     	
     	final Button buttonVoltar = (Button) findViewById(R.id.buttonVoltar);
     			
-		// usado toda vez que o app é iniciado, pra saber se existe o arquivo contendo o usuario e senha
+		// usado toda vez que o app  iniciado, pra saber se existe o arquivo contendo o usuario e senha
 		
 		sharedPreferences = getSharedPreferences(userLoginAndPasswordPreferences,Context.MODE_PRIVATE);
 		
@@ -89,7 +99,7 @@ public class MainActivity extends Activity{
 				
 				SharedPreferences.Editor editor = sharedPreferences.edit();
 			
-				// escreve uma quantidade de milisegundos aleatória (01/10/2011) para a primeira autenticação
+				// escreve uma quantidade de milisegundos aleatria (01/10/2011) para a primeira autenticao
 				
 				editor.putString(hora, String.valueOf(1317427200));
 				editor.commit();		
@@ -105,7 +115,7 @@ public class MainActivity extends Activity{
 				
 		if (!isNetworkAvailable()){
 			
-			// wifi/3G/4G não está ativado
+			// wifi/3G/4G no est ativado
 			
 			new AlertDialog.Builder(MainActivity.this)
 			.setTitle("Atenção")
@@ -153,11 +163,12 @@ public class MainActivity extends Activity{
 						
 					}
 				})
-				.setNegativeButton("Não", null)
+				.setNegativeButton("No", null)
 				.show();
 								
 			}
 		});
+		
 		
 		buttonAlertar.setOnClickListener(new View.OnClickListener() {
 			
@@ -210,7 +221,7 @@ public class MainActivity extends Activity{
 				
 					if (!isNetworkAvailable()){
 					
-						// wifi/3G/4G não está ativado
+						// wifi/3G/4G no est ativado
 
 						buttonAlertar.setClickable(true);
 						
@@ -240,18 +251,52 @@ public class MainActivity extends Activity{
 					
 					}
 				
-					vibrateOnClickAlertButton(MainActivity.this,500);
+					mFileName = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+					mFileName += "/audio.3gp"; 
 					
-					new AsyncTaskEx().execute();
+					mStartRecording = true;
+					
+					// Começa a gravar
+					onRecord(mStartRecording);
+					
+					new AlertDialog.Builder(MainActivity.this)
+					.setTitle("Descreva a ocorrência")
+					.setMessage("Gravando...")
+					.setNeutralButton("Alertar", new DialogInterface.OnClickListener() {
+
+		                public void onClick(DialogInterface dialog, int which) {
+		            		try {
+		            			
+		            			mStartRecording = !mStartRecording;
+		            			
+		            			onRecord(mStartRecording);
+		            			
+		            			vibrateOnClickAlertButton(MainActivity.this,500); buttonAlertar.setClickable(true);
+		            			
+		            			new AsyncTaskEx().execute();
+		            		}
+		            		catch(Exception e){
+		            			
+		            			buttonAlertar.setClickable(true);
+		            			
+		            			Toast.makeText(MainActivity.this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+
+		            			return;
+		            		}
+		                }
+		            })
+					.show();
 
 				} catch (Exception e) {
 					
 					buttonAlertar.setClickable(true);
 					
 					Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-											
+						
+					return;
 				}
 			}
+			
 		});			
 		
 		buttonVoltar.setOnClickListener(new View.OnClickListener() {
@@ -277,6 +322,52 @@ public class MainActivity extends Activity{
 		
 	}
 	
+	private void onRecord(boolean mStartRecording) throws Exception{
+		
+		try{
+		
+			if (mStartRecording){
+				startRecording();
+			}
+			else{
+				stopRecording();
+			}
+		}
+		catch(Exception e){
+			throw new Exception(e);
+		}
+	}
+	
+    private void startRecording() throws Exception{
+    
+    	try {
+	        mRecorder = new MediaRecorder();
+	        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+	        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+	        mRecorder.setOutputFile(mFileName);Toast.makeText(MainActivity.this, mFileName, Toast.LENGTH_LONG).show();
+
+	        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+	        mRecorder.prepare();
+	        mRecorder.start();
+        } catch (Exception e) {
+        	throw new Exception (e);
+        }
+    }
+    
+    private void stopRecording() throws Exception{
+
+    	
+	    	try {
+		        mRecorder.stop();
+	    	}
+	    	catch (RuntimeException e){
+		        mRecorder.release();
+		        mRecorder = null;
+		        //throw new Exception (e);
+	    	}
+    	
+    }
+	
 	private void vibrateOnClickAlertButton(Context mContext,long timeToVibrate){
 		
 		Vibrator vibrateOnClickAlertButton = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
@@ -301,7 +392,7 @@ public class MainActivity extends Activity{
 				sharedPreferences = getSharedPreferences(userLoginAndPasswordPreferences,Context.MODE_PRIVATE);
 				
 				gpsTracker = new GPSTracker(MainActivity.this,sharedPreferences.getString("usuario", "admin"),sharedPreferences.getString("senha", "admin"),
-							sharedPreferences.getString("nome", "Usuário"), sharedPreferences.getString("telefone", "00000000000"),buttonAlertar);
+							sharedPreferences.getString("nome", "Usurio"), sharedPreferences.getString("telefone", "00000000000"),buttonAlertar);
 				
 				sharedPreferences = getSharedPreferences(lastRequestPreferences,Context.MODE_PRIVATE);
 				
@@ -496,7 +587,7 @@ public class MainActivity extends Activity{
 			}
 			else if (resultCode == Activity.RESULT_CANCELED) {
 
-				// fechar aplicação porque usuário cancelou autenticação
+				// fechar aplicao porque usurio cancelou autenticao
 				finish();
 				
 			}
